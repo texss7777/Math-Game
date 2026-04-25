@@ -891,16 +891,31 @@
     
     document.getElementById('teacherSubmitBtn').onclick = async () => {
         const pass = document.getElementById('teacherPassInput').value;
-      try {
-    const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL + '?checkPass=' + pass);
-    const result = await response.json();
-    if (result.success === true) {
-        // الرقم صحيح
-    } else {
-        alert("⚠️ الرقم السري غير صحيح");
+   document.getElementById('teacherSubmitBtn').onclick = async () => {
+    const pass = document.getElementById('teacherPassInput').value;
+    
+    try {
+        // إرسال الرقم إلى Apps Script للتحقق
+        const response = await fetch(GOOGLE_SHEETS_WEBHOOK_URL + '?checkPass=' + pass);
+        const result = await response.json();
+        
+        if (result.success === true) {
+            // الرقم صحيح - عرض النتائج
+            teacherScreen.classList.add('hide');
+            document.getElementById('welcomeMessage').innerHTML = '🌸 أهلاً المعلمة / ابتسام العطوي 🌸<br>📊 جاري تحميل النتائج...';
+            resultsScreen.classList.remove('hide');
+            
+            const data = await fetchAllStudentsData();
+            const students = processStudentsData(data);
+            displayResults(students);
+        } else {
+            alert("⚠️ الرقم السري غير صحيح");
+        }
+    } catch(error) {
+        console.error("خطأ في التحقق:", error);
+        alert("⚠️ حدث خطأ في التحقق من الرقم السري");
     }
-} catch(e) {
-    alert("⚠️ خطأ في التحقق");
+};
 }
     };
     
